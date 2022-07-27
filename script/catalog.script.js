@@ -302,7 +302,7 @@
           document.body.style.overflow = 'visible';
         });
 
-        formBtn.addEventListener('click', (form, btn) => {
+        formBtn.addEventListener('click', (btn) => {
           btn.preventDefault();
           if(validateForm()) {
             formBtn.innerHTML = `<span class="spinner"></span>`;
