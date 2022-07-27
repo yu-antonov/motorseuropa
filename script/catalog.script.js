@@ -265,11 +265,13 @@
         inputName.id = 'input-name';
         inputName.classList.add('input');
         inputName.type = 'text';
+        inputName.name = 'Имя';
         inputName.setAttribute('data-validate-field','name');
         inputName.placeholder = ' ';
         inputTel.id = 'input-tel';
         inputTel.classList.add('input');
         inputTel.type = 'tel';
+        inputTel.name = 'Телефон';
         inputName.setAttribute('data-validate-field','tel');
         inputTel.placeholder = ' ';
         cutName.classList.add('cut', 'cut-short');
@@ -291,6 +293,7 @@
 
         formTextArea.value = `Здравствуйте, интересует двигатель ${data[i].name} ${data[i].subname} ${data[i].year} ${data[i].volume}`;
         formTextArea.rows = '5';
+        formTextArea.name = 'Сообщение';
 
         formBtn.type = 'submit';
         formBtn.textContent = 'Запросить';
@@ -304,8 +307,13 @@
 
         formBtn.addEventListener('click', (btn) => {
           btn.preventDefault();
-          if(validateForm()) {
-            formBtn.innerHTML = `<span class="spinner"></span>`;
+          const spinnerBlock = document.createElement('div');
+          const spinnerElement = document.createElement('span');
+          spinnerBlock.classList.add('spinner-block');
+          spinnerElement.classList.add('spinner-element');
+          spinnerBlock.append(spinnerElement);
+          modalWindow.append(spinnerBlock);
+          if(validateForm()) {                      
             const forma = document.querySelector('.catalog__form');
             sendMessage(forma);
             function sendMessage(forma) {              
@@ -314,7 +322,16 @@
               xhr.onreadystatechange = function() {
                   if (xhr.readyState === 4) {
                       if (xhr.status === 200) {
-                          console.log('Успешно');
+                          forma.remove();
+                          const greateBlock = document.createElement('div');
+                          greateBlock.classList.add('greateBlock');
+                          greateBlock.textContent = 'Ваше сообщение отправлено';
+                          form.remove();
+                          modalDescrBlock.remove();            
+                          spinnerBlock.remove();
+                          modalWindow.append(greateBlock, modalDescrBlock);
+                      } else {
+                        spinnerBlock.remove();
                       }
                   }
               }
@@ -322,8 +339,9 @@
               xhr.send(formData);  
               forma.reset();
             }
+          } else {
+            spinnerBlock.remove();
           };         
-          //formBtn.innerHTML = `<span class="spinner"></span>`;
         })
         
         inputName.addEventListener('input', function() {
