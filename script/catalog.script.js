@@ -258,15 +258,19 @@
         socialIconWhatsapp.src = '../images/WhatsApp.svg';
         socialIconWhatsapp.alt = 'Social Icon';
         socialIconViber.classList.add('social__icon');
-        socialIconViber.src = '../images/Viber.svg';
+        socialIconViber.src = '../images/viber.svg';
         socialIconViber.alt = 'Social Icon';
         inputContainerName.classList.add('input-container', 'ic1');
         inputContainerTel.classList.add('input-container', 'ic2');
+        inputName.id = 'input-name';
         inputName.classList.add('input');
         inputName.type = 'text';
+        inputName.setAttribute('data-validate-field','name');
         inputName.placeholder = ' ';
+        inputTel.id = 'input-tel';
         inputTel.classList.add('input');
         inputTel.type = 'tel';
+        inputName.setAttribute('data-validate-field','tel');
         inputTel.placeholder = ' ';
         cutName.classList.add('cut', 'cut-short');
         cutTel.classList.add('cut');
@@ -275,7 +279,9 @@
         lableTel.classList.add('placeholder');
         lableTel.textContent = 'Телефон';
         
-        form.classList.add('catalog__form');        
+        form.classList.add('catalog__form');
+        form.method = 'POST';
+        form.enctype = 'multipart/form-data';        
         formTextArea.classList.add('form__input', 'textarea', 'input');
         formBtn.classList.add('hero__btn', 'form__btn');
         logo.classList.add('modal__logo');
@@ -296,9 +302,92 @@
           document.body.style.overflow = 'visible';
         });
 
-        formBtn.addEventListener('click', (btn) => {
+        formBtn.addEventListener('click', (form, btn) => {
           btn.preventDefault();
+          if(validateForm()) {
+            formBtn.innerHTML = `<span class="spinner"></span>`;
+            const forma = document.querySelector('.catalog__form');
+            sendMessage(forma);
+            function sendMessage(forma) {              
+              let formData = new FormData(forma);
+              let xhr = new XMLHttpRequest();
+              xhr.onreadystatechange = function() {
+                  if (xhr.readyState === 4) {
+                      if (xhr.status === 200) {
+                          console.log('Успешно');
+                      }
+                  }
+              }
+              xhr.open('POST', 'mail.php', true);
+              xhr.send(formData);  
+              forma.reset();
+            }
+          };         
+          //formBtn.innerHTML = `<span class="spinner"></span>`;
         })
+        
+        inputName.addEventListener('input', function() {
+          this.classList.remove('invalid');
+          if (document.querySelector('.errors')) {
+            document.querySelector('.errors').remove();
+          }          
+        });
+        inputTel.addEventListener('input', function() {
+          this.classList.remove('invalid');
+          if (document.querySelector('.errors')) {
+            document.querySelector('.errors').remove();
+          } 
+        });
+
+        function validateForm() {
+          let countErrors = [];         
+          function control(str) {
+            let letters = /^[А-Яа-я]+$/;
+            if (!str.match(letters)) {
+                return false;
+            } else {
+                return true;
+            }
+          }
+          function controlN(numb) {
+            let number = /^[0-9+]+$/;
+            if (!numb.match(number)) {
+                return false;
+            } else {
+                return true;
+            }
+          }
+          if(!control(inputName.value.trim())) {
+            inputName.classList.add('invalid');
+            countErrors.push('введите имя');
+          }
+          if(inputTel.value.length < 12) {
+            inputTel.classList.add('invalid');
+            countErrors.push('номер телефона указан некорректно');
+          }
+          if(!controlN(inputTel.value)) {
+            inputTel.classList.add('invalid');
+            countErrors.push('номер телефона должен состоять только из цифр и знака "+" в начале');
+          }                 
+          if (countErrors.length === 0) {
+            return true;
+          } else {              
+              const errorsBlock = document.createElement('span');
+              errorsBlock.classList.add('errors');
+              errorsBlock.textContent = 'Ошибка:';
+              if (countErrors.length === 1) {
+                  errorsBlock.textContent = errorsBlock.textContent + ' ' + countErrors[0] + '!';
+              }
+              if (countErrors.length == 2) {
+                  errorsBlock.textContent = errorsBlock.textContent + ' ' + countErrors[0] + ', ' + countErrors[1] + '!';
+              }
+              if (countErrors.length == 3) {
+                  errorsBlock.textContent = errorsBlock.textContent + ' ' + countErrors[0] + ', ' + countErrors[1] + ', ' + countErrors[2] + '!';
+              }
+              form.append(errorsBlock);              
+              return false;
+          }
+        }
 
         modalClose.append(closeSpan);
         socialLinkTelegram.append(socialIconTelegram);
@@ -314,7 +403,7 @@
         form.append(inputContainerName, inputContainerTel, formTextArea, formBtn);        
         modalWindow.append(logo, form, modalClose, modalDescrBlock);
         modal.append(modalWindow);
-        document.body.appendChild(modal);
+        document.body.append(modal);        
         document.body.style.overflow = 'hidden';
       });
       
@@ -350,4 +439,43 @@
   let timeout2 = setTimeout(() =>{
     preloader.style.display = 'none';
   }, 3000);
+
+  // function validate() {
+  //   console.log('valid')    
+  //   new window.JustValidate('.catalog__form', {
+  //     rules: {
+  //         tel: {
+  //             required: true
+  //         },
+  //         name: {
+  //           required: true
+  //         }
+  //     },
+  //     messages: {
+  //         name: {
+  //             required: 'Введите имя',
+  //             minLength: 'Введите корректное имя'
+  //         },
+  //         tel: {
+  //             required: 'Введите телефон',
+  //         }
+  //     },
+  //     submitHandler: function(thisForm) {
+  //         let formData = new FormData(thisForm);
+  //         let xhr = new XMLHttpRequest();
+  //         xhr.onreadystatechange = function() {
+  //             if (xhr.readyState === 4) {
+  //                 if (xhr.status === 200) {
+  //                     document.querySelector('.mail').classList.add('mail-visibel');
+  //                 }
+  //             }
+  //         }
+  //         xhr.open('POST', 'mail.php', true);
+  //         xhr.send(formData);
+
+  //         thisForm.reset();
+  //     }
+  //   })
+  // }
+
 })()

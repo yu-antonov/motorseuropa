@@ -853,6 +853,36 @@ main {
   transform: rotate(45deg) translate(-8px, -8px);
 }
 
+.spinner {
+  position: absolute;
+  top: 18%;
+  left: 47%;
+  display: block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #fff;
+  border-top: 2px solid transparent; 
+  border-radius: 50%;  
+  animation: rotate 1s linear infinite;
+}
+
+@keyframes rotate {  
+  100% {
+    transform: rotate(360deg);    
+  }
+}
+
+.invalid {
+  border: 1px solid #FC466B;
+}
+
+.errors {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 12px;
+  color: #FC466B;
+}
+
 /* ========= Media Queries ========= */
 
 @media (max-width: 1400px) {  
